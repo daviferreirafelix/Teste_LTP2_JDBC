@@ -12,7 +12,7 @@ public class ProfessorDAO {
     Connection con = ConnectionFactory.getConnection();
 
     public boolean verificarProfessor(Professor professor){
-        String sql = "SELECT COUNT(*) AS profs FROM professor WHERE nome=? OR id=?";
+        String sql = "SELECT COUNT(*) AS profs FROM professor WHERE nomeProfessor=? OR idProfessor=?";
 
         try{
             PreparedStatement stmt = con.prepareStatement(sql);
@@ -31,74 +31,62 @@ public class ProfessorDAO {
             throw new RuntimeException(e);
         }
     }
+    
+    public void setProfessor(Professor prof, int tipoProfessor){
+        try{
+            String sql = "INSERT INTO professor (idProfessor, nomeProfessor, tipoProfessor) VALUES (?,?,?)";
+            PreparedStatement stmt = con.prepareStatement(sql);
+            stmt.setInt(1, prof.getId());
+            stmt.setString(2, prof.getNome());
+            stmt.setInt(3, tipoProfessor);
+            stmt.execute();
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
 
-    public void setProfessor(Professor prof, int tipoProf){
-        if(verificarProfessor(prof)){
+    public void setProfessorEfetivo(Professor prof){
+        Prof_efetivo profEfetivo = (Prof_efetivo) prof;
+        prof.setTipoProfessor(2);
+
+        if(verificarProfessor(profEfetivo)){
             System.out.println("Professor já cadastrado.");
         } else {
-            try {
-                switch (tipoProf){
-                    case 1 -> {
-                    	int tipo = setProfessorSubs(prof);
-                    	String sql = "INSERT INTO professor (id, NOME, tipoProfessor) VALUES (?,?,?)";
-                    	PreparedStatement stmt = con.prepareStatement(sql);
-                        stmt.setInt(1, prof.getId());
-                        stmt.setString(2, prof.getNome());
-                        stmt.setInt(3, tipo);
-                        stmt.execute();
-                    }
+        	try{
+                String sql = "INSERT INTO professor_efetivo (idProfEfetivo, nomeProfEfetivo, numSiape) VALUES (?,?,?)";
+                PreparedStatement stmt = con.prepareStatement(sql);
 
-                    case 2 -> {
-                    	int tipo = setProfessorEfetivo(prof);
-                    	String sql = "INSERT INTO professor (id, NOME, tipoProfessor) VALUES (?,?,?)";
-                    	PreparedStatement stmt = con.prepareStatement(sql);
-                        stmt.setInt(1, prof.getId());
-                        stmt.setString(2, prof.getNome());
-                        stmt.setInt(3, tipo);
-                        stmt.execute();
-                    }
-                }
-
-                System.out.println("Professor cadastrado com sucesso.");
+                stmt.setInt(1, profEfetivo.getId());
+                stmt.setString(2, profEfetivo.getNome());
+                stmt.setInt(3, profEfetivo.getNumSiape());
+                stmt.execute();
+                setProfessor(profEfetivo, prof.getTipoProfessor());
             } catch (SQLException e){
                 e.printStackTrace();
             }
         }
     }
 
-    public int setProfessorEfetivo(Professor prof){
-        Prof_efetivo profEfetivo = (Prof_efetivo) prof;
-        int idProfEfetivo = 1;
-        
-        try{
-            String sql = "INSERT INTO professor_efetivo (numSiape, fk_idProfessor) VALUES (?, ?)";
-            PreparedStatement stmt = con.prepareStatement(sql);
-
-            stmt.setInt(1, profEfetivo.getNumSiape());
-            stmt.setInt(2, profEfetivo.getId());
-            stmt.execute();
-        } catch (SQLException e){
-            e.printStackTrace();
-        }
-        
-        return idProfEfetivo;
-    }
-
-    public int setProfessorSubs(Professor prof){
+    public void setProfessorSubs(Professor prof){
         Prof_subs profSubs = (Prof_subs) prof;
-        int idProfSubs = 2;
-        try{
-            String sql = "INSERT INTO professor_subs (codContrato, fk_idProfessor) VALUES (?, ?)";
+        prof.setTipoProfessor(1);
 
-            PreparedStatement stmt = con.prepareStatement(sql);
-            stmt.setInt(1, profSubs.getCodContrato());
-            stmt.setInt(2, profSubs.getId());
-            stmt.execute();
-            } catch(SQLException e){
-                e.printStackTrace();
+        if(verificarProfessor(profSubs)){
+            System.out.println("Professor já cadastrado.");
+        } else {
+            try{
+                String sql = "INSERT INTO professor_subs (idProfSubs, nomeProfSubs, codContrato) VALUES (?,?,?)";
+
+                PreparedStatement stmt = con.prepareStatement(sql);
+                stmt.setInt(1, profSubs.getId());
+                stmt.setString(2, profSubs.getNome());
+                stmt.setInt(3, profSubs.getCodContrato());
+                stmt.execute();
+                setProfessor(profSubs, prof.getTipoProfessor());
+                } catch(SQLException e){
+                    e.printStackTrace();
+            }
         }
-        
-        return idProfSubs;
     }
 
     public void updateProfessorPorID(Professor prof){
@@ -106,7 +94,7 @@ public class ProfessorDAO {
             System.out.println("Este ID de professor não está cadastrado.");
         } else{
             try{
-                String sql = "UPDATE professor SET nome=? WHERE id=?";
+                String sql = "UPDATE professor SET nomeProfessor=? WHERE idProfessor=?";
                 PreparedStatement stmt = con.prepareStatement(sql);
 
                 stmt.setString(1, prof.getNome());
@@ -128,7 +116,7 @@ public class ProfessorDAO {
             return "Este ID de professor não está cadastrado.";
         } else{
             try{
-                String sql = "SELECT * FROM professor WHERE id=?";
+                String sql = "SELECT * FROM professor WHERE idProfessor=?";
                 PreparedStatement stmt = con.prepareStatement(sql);
                 stmt.setInt(1, prof.getId());
                 ResultSet rs = stmt.executeQuery();
@@ -172,7 +160,7 @@ public class ProfessorDAO {
             System.out.println("Não existem professores cadastrados com este nome.");
         } else{
             try{
-                String sql = "DELETE FROM professor WHERE nome=?";
+                String sql = "DELETE FROM professor WHERE nomeProfessor=?";
                 PreparedStatement stmt = con.prepareStatement(sql);
 
                 stmt.setString(1, prof.getNome());

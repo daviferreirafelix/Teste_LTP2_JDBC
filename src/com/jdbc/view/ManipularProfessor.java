@@ -10,8 +10,8 @@ import java.util.Scanner;
 public class ManipularProfessor {
     public static void manipularProfessor() {
         Scanner scn = new Scanner(System.in);
-        ProfessorDAO professorDAO = new ProfessorDAO();
         Professor prof = new Professor();
+        ProfessorDAO professorDAO = new ProfessorDAO();
         Prof_subs profSubs = new Prof_subs();
         Prof_efetivo profEfetivo = new Prof_efetivo();
 
@@ -45,7 +45,7 @@ public class ManipularProfessor {
                         System.out.print("Insira o CÓDIGO DE CONTRATO do professor: ");
                         profSubs.setCodContrato(scn.nextInt());
 
-                        professorDAO.setProfessor(profSubs, tipoProfessor);
+                        professorDAO.setProfessorSubs(profSubs);
                     }
                     case 2 -> {
                         System.out.print("Insira o NOME do professor: ");
@@ -57,7 +57,7 @@ public class ManipularProfessor {
                         System.out.print("Insira o NÚMERO SIAPE do professor: ");
                         profEfetivo.setNumSiape(scn.nextInt());
 
-                        professorDAO.setProfessor(profEfetivo, tipoProfessor);
+                        professorDAO.setProfessorEfetivo(profEfetivo);
                     }
 
                     default -> System.out.println("Insira uma opção válida.");

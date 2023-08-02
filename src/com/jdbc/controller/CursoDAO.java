@@ -11,7 +11,7 @@ public class CursoDAO {
 
 	public boolean verificarCurso(Curso curso) {
 		try {
-			String sql = "SELECT COUNT(*) AS count FROM curso WHERE nome=? OR idCurso=?";
+			String sql = "SELECT COUNT(*) AS count FROM curso WHERE nome=? OR id=?";
 			PreparedStatement stmt = con.prepareStatement(sql);
 			stmt.setString(1, curso.getNome());
 			stmt.setInt(2, curso.getId());
@@ -29,7 +29,7 @@ public class CursoDAO {
 	}
 
 	public void adicionarCurso(Curso curso) {
-		String sqlInsert = "INSERT INTO curso (nome, idCurso) VALUES (?,?)";
+		String sqlInsert = "INSERT INTO curso (nome, id) VALUES (?,?)";
 		String nome = curso.getNome();
 		int id = curso.getId();		
 
@@ -51,7 +51,7 @@ public class CursoDAO {
 	}
 
 	public void alterarCursoPorID(Curso curso) {
-		String sqlUpdate = "UPDATE curso SET nome=? WHERE idCurso=?";
+		String sqlUpdate = "UPDATE curso SET nome=? WHERE id=?";
 		
 		if(verificarCurso(curso)) {
 			try {
@@ -78,7 +78,7 @@ public class CursoDAO {
 			return "Este ID de curso não está cadastrado.";
 		} else{
 			try {
-				String sqlRead = "SELECT nome FROM curso WHERE idCurso=?";
+				String sqlRead = "SELECT nome FROM curso WHERE id=?";
 				PreparedStatement stmt = con.prepareStatement(sqlRead);
 				stmt.setInt(1, curso.getId());
 				ResultSet rs = stmt.executeQuery();

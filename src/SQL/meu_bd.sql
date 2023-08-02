@@ -1,3 +1,5 @@
-USE MEU_DB;
+use meu_db;
 
-ALTER TABLE PROFESSOR_SUBS ADD CONSTRAINT FOREIGN KEY(fk_idProfessor) REFERENCES PROFESSOR(ID)
+delete from professor_efetivo where numSiape = 12310;
+
+select * from professor

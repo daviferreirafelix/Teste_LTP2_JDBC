@@ -1,3 +1,8 @@
-USE MEU_DB;
+create table if not exists professor (
+	idProfessor int not null primary key,
+    nomeProfessor varchar(50) not null
+) default charset=utf8mb4;
 
-ALTER TABLE PROFESSOR_SUBS ADD CONSTRAINT FOREIGN KEY(fk_idProfessor) REFERENCES PROFESSOR(ID)
+use meu_db;
+
+delete from professor_efetivo where nomeProfEfetivo = 'Manel'
