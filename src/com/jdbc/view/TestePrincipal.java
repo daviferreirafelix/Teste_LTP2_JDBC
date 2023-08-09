@@ -32,6 +32,12 @@ public class TestePrincipal {
 					novaOperacao = scn.nextInt();
 					scn.nextLine();
 				}
+				case 3 -> {
+					ManipularDisciplina.manipularDisciplina();
+					System.out.print("Deseja uma nova operação? 0 para NÃO ou QUALQUER NÚMERO para SIM: ");
+					novaOperacao = scn.nextInt();
+					scn.nextLine();
+				}
 				default -> {
 					System.out.println("Digite um comando válido.");
 					System.out.print("Deseja uma nova operação? 0 para NÃO ou QUALQUER NÚMERO para SIM: ");
