@@ -11,27 +11,30 @@ import java.util.ArrayList;
 public class ProfessorDAO {
     Connection con = ConnectionFactory.getConnection();
 
+    // colocar os tipos de professores possíveis em uma enum
+    // enum é uma classe de tipagem, com isso, ao passar uma enum com os tipos de professores
+    // eu posso acessar os tipos na passagem de parâmetro e evitar que sejam escritos erroneamente
+    // na assinatura do método durante sua chamada
+    // portanto, só passa logo essa porra desses professores para uma enum e para de falar demais
     public boolean verificarProfessor(Professor professor){
-        String sql = "SELECT COUNT(*) AS profs FROM professor WHERE nomeProfessor=? OR idProfessor=?";
+            try{
+                String sql = "SELECT COUNT(*) AS profs FROM professor WHERE nomeProfessor=? OR idProfessor=?";
+                PreparedStatement stmt = con.prepareStatement(sql);
+                stmt.setString(1, professor.getNome());
+                stmt.setInt(2, professor.getId());
+                ResultSet rs = stmt.executeQuery();
 
-        try{
-            PreparedStatement stmt = con.prepareStatement(sql);
-            stmt.setString(1, professor.getNome());
-            stmt.setInt(2, professor.getId());
+                if (rs.next()){
+                    int quantProfs = rs.getInt("profs");
+                    return quantProfs > 0;
+                }
 
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()){
-                int quantProfs = rs.getInt("profs");
-                return quantProfs > 0;
+                return false;
+            }catch (SQLException e){
+                throw new RuntimeException(e);
             }
-
-            return false;
-        }catch (SQLException e){
-            throw new RuntimeException(e);
         }
-    }
-    
+
     public void setProfessor(Professor prof, int tipoProfessor){
         try{
             String sql = "INSERT INTO professor (idProfessor, nomeProfessor, tipoProfessor) VALUES (?,?,?)";
@@ -41,7 +44,7 @@ public class ProfessorDAO {
             stmt.setInt(3, tipoProfessor);
             stmt.execute();
         } catch (SQLException e){
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -62,7 +65,7 @@ public class ProfessorDAO {
                 stmt.execute();
                 setProfessor(profEfetivo, prof.getTipoProfessor());
             } catch (SQLException e){
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
     }
@@ -84,7 +87,7 @@ public class ProfessorDAO {
                 stmt.execute();
                 setProfessor(profSubs, prof.getTipoProfessor());
                 } catch(SQLException e){
-                    e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
     }
@@ -103,15 +106,12 @@ public class ProfessorDAO {
 
                 System.out.println("Dados alterados com sucesso.");
             } catch(SQLException e){
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
     }
 
     public String getProfessorPorID(Professor prof){
-        ArrayList<String> arr = new ArrayList<>();
-        int colunaNomeProfessor = 2;
-
         if (!verificarProfessor(prof)){
             return "Este ID de professor não está cadastrado.";
         } else{
@@ -122,9 +122,7 @@ public class ProfessorDAO {
                 ResultSet rs = stmt.executeQuery();
 
                 rs.next();
-                arr.add(rs.getString(colunaNomeProfessor));
-                return arr.toString();
-
+                return rs.getString("nomeProfessor");
             } catch(SQLException e){
                 throw new RuntimeException(e);
             }
@@ -168,7 +166,7 @@ public class ProfessorDAO {
                 stmt.close();
                 System.out.println("Professor removido.");
             } catch(SQLException e){
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
     }

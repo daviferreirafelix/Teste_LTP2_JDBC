@@ -29,26 +29,22 @@ public class CursoDAO {
 	}
 
 	public void adicionarCurso(Curso curso) {
-		String sqlInsert = "INSERT INTO curso (nome, id) VALUES (?,?)";
-		String nome = curso.getNome();
-		int id = curso.getId();		
-
 		if(verificarCurso(curso)) {
 			System.out.println("Curso já cadastrado.");
-
 		} else {
 			try {
+				String sqlInsert = "INSERT INTO curso (nome, id) VALUES (?,?)";
 				PreparedStatement stmt = con.prepareStatement(sqlInsert);
-				stmt.setString(1, nome);
-				stmt.setInt(2, id);
+				stmt.setString(1, curso.getNome());
+				stmt.setInt(2, curso.getId());
 				stmt.execute();
-				stmt.close();	
+
 				System.out.println("Curso adicionado.");
 			} catch(SQLException e) {
-				e.printStackTrace();
+				throw new RuntimeException(e);
 			}
-		}	
-	}
+		}
+    }
 
 	public void alterarCursoPorID(Curso curso) {
 		String sqlUpdate = "UPDATE curso SET nome=? WHERE id=?";
@@ -60,10 +56,9 @@ public class CursoDAO {
 				stmt.setString(1, curso.getNome());
 				stmt.setInt(2, curso.getId());	
 				stmt.execute();
-				stmt.close();	
 				System.out.println("Curso alterado.");
 			} catch(SQLException e) {
-				e.printStackTrace();
+				throw new RuntimeException(e);
 			}
 		} else {
 			System.out.println("Este curso não existe.");
@@ -71,10 +66,7 @@ public class CursoDAO {
 	}
 
 	public String buscarPorID(Curso curso) {
-		ArrayList<String> list = new ArrayList<>();
-		int colunaNomeCurso = 1;
-
-		if (verificarCurso(curso)){
+		if (!verificarCurso(curso)){
 			return "Este ID de curso não está cadastrado.";
 		} else{
 			try {
@@ -84,10 +76,7 @@ public class CursoDAO {
 				ResultSet rs = stmt.executeQuery();
 
 				rs.next();
-				curso.setNome(rs.getString(colunaNomeCurso));
-				list.add(curso.getNome());
-
-				return list.toString();
+				return rs.getString("nome");
 			} catch (SQLException e) {
 				throw new RuntimeException(e);
 			}
@@ -96,22 +85,18 @@ public class CursoDAO {
 
 	public String getLista() {
 		ArrayList<String> listNomes = new ArrayList<>();
-		Curso curso;
 		try {
-			String sqlRead = "SELECT * FROM curso";
-			PreparedStatement stmt = con.prepareStatement(sqlRead);
+			String sql = "SELECT * FROM curso";
+			PreparedStatement stmt = con.prepareStatement(sql);
 			ResultSet rs = stmt.executeQuery();
 
 			if(!rs.next()){
 				return "Não há cursos neste banco de dados.";
 			} else{
 				do{
-					curso = new Curso();
-					curso.setNome(rs.getString("nome"));
-					listNomes.add(curso.getNome());
+					listNomes.add(rs.getString("nome"));
 				} while(rs.next());
 
-			stmt.close();
 			return listNomes.toString();
 			}
 		} catch(SQLException e) {
@@ -129,11 +114,9 @@ public class CursoDAO {
 				stmt.setString(1, curso.getNome());
 
 				stmt.execute();
-				stmt.close();
 				System.out.println("Curso removido.");
 			} catch(SQLException e) {
-				e.printStackTrace();
-
+				throw new RuntimeException(e);
 			}
 		}
 	}

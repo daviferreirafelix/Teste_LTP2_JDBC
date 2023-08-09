@@ -1,8 +1,9 @@
-create table if not exists professor (
-	idProfessor int not null primary key,
-    nomeProfessor varchar(50) not null
-) default charset=utf8mb4;
-
 use meu_db;
 
-delete from professor_efetivo where nomeProfEfetivo = 'Manel'
+delete from professor_efetivo where numSiape = 12310;
+
+select * from curso;
+
+delete from curso where id = 321123;
+
+select * from disciplina

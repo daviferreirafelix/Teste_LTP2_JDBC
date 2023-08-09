@@ -1,6 +1,6 @@
 package com.jdbc.model;
 
-public class Professor {
+public abstract class Professor {
     private int id;
     private String nome;
     private int tipoProfessor;

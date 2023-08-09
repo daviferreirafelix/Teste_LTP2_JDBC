@@ -10,7 +10,6 @@ import java.util.Scanner;
 public class ManipularProfessor {
     public static void manipularProfessor() {
         Scanner scn = new Scanner(System.in);
-        Professor prof = new Professor();
         ProfessorDAO professorDAO = new ProfessorDAO();
         Prof_subs profSubs = new Prof_subs();
         Prof_efetivo profEfetivo = new Prof_efetivo();
@@ -89,6 +88,7 @@ public class ManipularProfessor {
             }
 
             case 5 -> {
+                Professor prof = new Prof_subs();
                 System.out.print("Digite o NOME do professor a ser removido: ");
                 prof.setNome(scn.next());
                 scn.nextLine();
